@@ -1,4 +1,12 @@
-import { IsEmail, IsNumber, IsString, Max, Min } from 'class-validator';
+import {
+  IsEmail,
+  IsIn,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -11,6 +19,7 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
+  @MinLength(8)
   password: string;
 
   //   @IsString()
@@ -22,5 +31,6 @@ export class CreateUserDto {
   age: number;
 
   @IsString()
+  @IsIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
   bloodType: string;
 }

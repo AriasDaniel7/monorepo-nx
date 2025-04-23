@@ -39,8 +39,7 @@ services:
     volumes:
       - redis:/bitnami/redis/data
     environment:
-      - REDIS_USERNAME=redis_user
-      - REDIS_PASSWORD=redis_password
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     networks:
       - production_manager
 

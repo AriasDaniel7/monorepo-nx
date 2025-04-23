@@ -9,5 +9,14 @@
   ],
   "compilerOptions": {
     "esModuleInterop": true,
+    "baseUrl": "./",
+    "paths": {
+      "@user/*": [
+        "./src/app/user/*"
+      ],
+      "@common/*": [
+        "./src/app/common/*"
+      ],
+    }
   }
 }

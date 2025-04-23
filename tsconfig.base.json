@@ -17,14 +17,6 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {
-      "@user/*": [
-        "./apps/backend/src/app/user/*"
-      ],
-      "@common/*": [
-        "./apps/backend/src/app/common/*"
-      ],
-    }
   },
   "exclude": [
     "node_modules",

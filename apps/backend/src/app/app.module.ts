@@ -1,16 +1,33 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
 
+import { redisStore } from 'cache-manager-redis-store';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import { UserModule } from '@user/user.module';
 import { CommonModule } from './common/common.module';
+import { UserModule } from '@user/user.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      isGlobal: true,
+      useFactory: async (configService: ConfigService) => ({
+        store: await redisStore({
+          socket: {
+            host: configService.get('REDIS_HOST'),
+            port: configService.get('REDIS_PORT'),
+          },
+          password: configService.get('REDIS_PASSWORD'),
+        }),
+        ttl: 3600000, // 1 hour
+      }),
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
