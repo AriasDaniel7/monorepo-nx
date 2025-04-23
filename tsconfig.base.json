@@ -17,6 +17,11 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "paths": {
+      "@user/*": [
+        "./apps/backend/src/app/user/*"
+      ]
+    }
   },
   "exclude": [
     "node_modules",

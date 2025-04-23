@@ -24,7 +24,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgresql:/var/lib/postgresql/data
+      - postgresql:/bitnami/postgresql
       - certs:/certs-export
     networks:
       - production_manager
@@ -40,6 +40,8 @@ services:
     environment:
       - REDIS_USERNAME=redis_user
       - REDIS_PASSWORD=redis_password
+    networks:
+      - production_manager
 
 networks:
   production_manager:

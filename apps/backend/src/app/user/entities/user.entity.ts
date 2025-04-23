@@ -1,0 +1,62 @@
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+@Entity('user')
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({
+    type: 'text',
+    name: 'first_name',
+  })
+  firstName: string;
+
+  @Column({
+    type: 'text',
+    name: 'last_name',
+  })
+  lastName: string;
+
+  @Column({
+    type: 'text',
+    name: 'email',
+    unique: true,
+  })
+  email: string;
+
+  @Column({
+    type: 'text',
+    name: 'password',
+  })
+  password: string;
+
+  @Column({
+    type: 'text',
+    name: 'tax_id',
+  })
+  taxId: string;
+
+  @Column({
+    type: 'integer',
+    name: 'age',
+  })
+  age: number;
+
+  @Column({
+    type: 'text',
+    name: 'blood_type',
+  })
+  bloodType: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}

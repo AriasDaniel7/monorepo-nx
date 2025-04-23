@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { checkServerIdentity } from 'tls';
+
+import { UserModule } from '@user/user.module';
 
 @Module({
   imports: [
@@ -22,20 +22,20 @@ import { checkServerIdentity } from 'tls';
                 ca: readFileSync(
                   join(
                     certsPath,
-                    configService.get('POSTGRESQL_CLIENT_CA_FILE')
-                  )
+                    configService.get('POSTGRESQL_CLIENT_CA_FILE'),
+                  ),
                 ).toString(),
                 cert: readFileSync(
                   join(
                     certsPath,
-                    configService.get('POSTGRESQL_CLIENT_CERT_FILE')
-                  )
+                    configService.get('POSTGRESQL_CLIENT_CERT_FILE'),
+                  ),
                 ).toString(),
                 key: readFileSync(
                   join(
                     certsPath,
-                    configService.get('POSTGRESQL_CLIENT_KEY_FILE')
-                  )
+                    configService.get('POSTGRESQL_CLIENT_KEY_FILE'),
+                  ),
                 ).toString(),
                 rejectUnauthorized: true,
                 checkServerIdentity: () => undefined, //TODO: Quitar en producción - solo es para evitar que se indentifique como localhost
@@ -55,8 +55,9 @@ import { checkServerIdentity } from 'tls';
         };
       },
     }),
+    UserModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
