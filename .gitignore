@@ -1,5 +1,10 @@
 # See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
+# Volumen of docker
+/postgresql
+/redis
+/certs
+
 # compiled output
 dist
 tmp
@@ -42,3 +47,4 @@ Thumbs.db
 .nx/workspace-data
 
 .angular
+.env

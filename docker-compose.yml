@@ -1,0 +1,54 @@
+services:
+  postgresql:
+    build:
+      context: ./config/postgres
+      dockerfile: Dockerfile
+    container_name: postgresql
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # Habilitar SSL
+      POSTGRESQL_ENABLE_TLS: ${POSTGRESQL_ENABLE_TLS}
+      # Requiere conexiones SSL
+      POSTGRESQL_TLS_CERT_FILE: ${POSTGRESQL_TLS_CERT_FILE}
+      POSTGRESQL_TLS_KEY_FILE: ${POSTGRESQL_TLS_KEY_FILE}
+      POSTGRESQL_TLS_CA_FILE: ${POSTGRESQL_TLS_CA_FILE}
+      # Configuraciones adicionales de seguridad
+      POSTGRESQL_PASSWORD_ENCRYPTION: ${POSTGRESQL_PASSWORD_ENCRYPTION}
+      POSTGRESQL_SHARED_PRELOAD_LIBRARIES: ${POSTGRESQL_SHARED_PRELOAD_LIBRARIES}
+      POSTGRESQL_PGAUDIT_LOG: ${POSTGRESQL_PGAUDIT_LOG}
+      # Limitar intentos de conexión fallidos
+      POSTGRESQL_MAX_CONNECTIONS: ${POSTGRESQL_MAX_CONNECTIONS}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+      - certs:/certs-export
+    networks:
+      - production_manager
+
+  redis:
+    image: bitnami/redis:7.4.2
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/bitnami/redis/data
+    environment:
+      - REDIS_USERNAME=redis_user
+      - REDIS_PASSWORD=redis_password
+
+networks:
+  production_manager:
+    driver: bridge
+
+volumes:
+  certs:
+    driver: local
+  redis:
+    driver: local
+  postgresql:
+    driver: local
