@@ -20,7 +20,10 @@
     "paths": {
       "@user/*": [
         "./apps/backend/src/app/user/*"
-      ]
+      ],
+      "@common/*": [
+        "./apps/backend/src/app/common/*"
+      ],
     }
   },
   "exclude": [
