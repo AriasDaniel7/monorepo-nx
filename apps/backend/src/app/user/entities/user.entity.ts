@@ -33,14 +33,15 @@ export class User {
   @Column({
     type: 'text',
     name: 'password',
+    select: false,
   })
   password: string;
 
-  @Column({
-    type: 'text',
-    name: 'tax_id',
-  })
-  taxId: string;
+  //   @Column({
+  //     type: 'text',
+  //     name: 'tax_id',
+  //   })
+  //   taxId: string;
 
   @Column({
     type: 'integer',

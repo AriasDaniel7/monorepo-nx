@@ -13,8 +13,8 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
-  @IsString()
-  taxId: string;
+  //   @IsString()
+  //   taxId: string;
 
   @IsNumber()
   @Min(0)
