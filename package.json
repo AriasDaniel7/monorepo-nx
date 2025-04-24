@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "extract-certs": "powershell -ExecutionPolicy Bypass -File .\\config\\postgres\\extract-certs.ps1",
-    "build": "npx nx build frontend && npx nx build backend"
+    "build": "npx nx build backend && npx nx build frontend",
+    "start": "node dist/apps/backend/main.js"
   },
   "private": true,
   "dependencies": {
@@ -21,6 +22,7 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.0",
     "@nestjs/platform-express": "^11.1.0",
+    "@nestjs/serve-static": "^5.0.3",
     "@nestjs/swagger": "^11.1.5",
     "@nestjs/typeorm": "^11.0.0",
     "@tailwindcss/postcss": "^4.1.4",

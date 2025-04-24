@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
-import { createKeyv } from '@keyv/redis';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
+import { createKeyv } from '@keyv/redis';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Keyv } from 'keyv';
@@ -15,6 +16,9 @@ import { UserModule } from '@user/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, 'public', 'browser'),
+    }),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

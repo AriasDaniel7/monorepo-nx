@@ -9,18 +9,31 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "webpack-cli build",
-        "args": ["node-env=production"]
+        "args": [
+          "node-env=production"
+        ],
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/backend/public",
+            "output": "public"
+          }
+        ]
       },
       "configurations": {
         "development": {
-          "args": ["node-env=development"]
+          "args": [
+            "node-env=development"
+          ]
         }
       }
     },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build"
+      ],
       "options": {
         "buildTarget": "backend:build",
         "runBuildTargetDependencies": false
