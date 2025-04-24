@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "extract-certs": "powershell -ExecutionPolicy Bypass -File .\\config\\postgres\\extract-certs.ps1",
+    "extract-certs": "powershell -ExecutionPolicy Bypass -File config/postgres/extract-certs.ps1",
     "build": "npx nx build backend && npx nx build frontend",
     "start": "node dist/apps/backend/main.js"
   },
