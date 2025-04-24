@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
+import { createKeyv } from '@keyv/redis';
 
-import { redisStore } from 'cache-manager-redis-store';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { Keyv } from 'keyv';
+import { CacheableMemory } from 'cacheable';
 
 import { CommonModule } from './common/common.module';
 import { UserModule } from '@user/user.module';
@@ -17,16 +19,19 @@ import { UserModule } from '@user/user.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       isGlobal: true,
-      useFactory: async (configService: ConfigService) => ({
-        store: await redisStore({
-          socket: {
-            host: configService.get('REDIS_HOST'),
-            port: configService.get('REDIS_PORT'),
-          },
-          password: configService.get('REDIS_PASSWORD'),
-        }),
-        ttl: 3600000, // 1 hour
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const redisPassword = configService.get<string>('REDIS_PASSWORD');
+        const redisUrl = `redis://:${redisPassword}@${configService.get<string>('REDIS_HOST')}:${configService.get<number>('REDIS_PORT')}`;
+
+        return {
+          stores: [
+            new Keyv({
+              store: new CacheableMemory({ ttl: 60000, lruSize: 5000 }),
+            }),
+            createKeyv(redisUrl),
+          ],
+        };
+      },
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

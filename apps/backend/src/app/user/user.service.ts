@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   ConflictException,
-  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -19,14 +18,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 import { PostgresError } from '@common/interfaces/postgres-error.interface';
 import { PaginationDto } from '@common/dtos/pagination.dto';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import { CacheService } from '@common/cache/cache.service';
+import { UserResponse } from '@common/interfaces/user-response.interface';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private cacheService: CacheService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -40,10 +39,8 @@ export class UserService {
 
       await this.userRepository.save(user);
 
-      const key = `user-${user.id}`;
-      await this.cacheManager.set(key, user);
-      await this.cacheManager.del('users');
-      console.log(`User ${user.id} created`);
+      await this.cacheService.setCache(`user-${user.id}`, user);
+      await this.cacheService.delCache(`users`);
 
       delete user.password;
 
@@ -60,7 +57,7 @@ export class UserService {
 
     const key = 'users';
 
-    const cacheUsers = await this.cacheManager.get(key);
+    const cacheUsers = await this.cacheService.getCache<UserResponse>(`users`);
 
     if (cacheUsers) return cacheUsers;
 
@@ -80,7 +77,7 @@ export class UserService {
       users: users,
     };
 
-    await this.cacheManager.set(key, response);
+    await this.cacheService.setCache(`users`, response);
 
     return response;
   }
@@ -88,14 +85,11 @@ export class UserService {
   async findOne(id: string) {
     let user: User;
 
-    const key = `user-${id}`;
-    const cacheUser = await this.cacheManager.get(key);
+    user = await this.cacheService.getCache<User>(`user-${id}`);
+
+    if (user) return user;
 
     if (isUUID(id)) {
-      if (cacheUser) {
-        return cacheUser;
-      }
-
       user = await this.userRepository.findOneBy({ id });
     }
 
@@ -103,7 +97,7 @@ export class UserService {
       throw new NotFoundException(`User with id '${id}' not found`);
     }
 
-    await this.cacheManager.set(key, user);
+    await this.cacheService.setCache(`user-${id}`, user);
 
     return user;
   }
@@ -129,6 +123,9 @@ export class UserService {
     try {
       await this.userRepository.save(user);
 
+      await this.cacheService.setCache(`user-${user.id}`, user);
+      await this.cacheService.delCache(`users`);
+
       delete user.password;
 
       return user;
@@ -141,8 +138,8 @@ export class UserService {
     const user = (await this.findOne(id)) as User;
 
     await this.userRepository.remove(user);
-    await this.cacheManager.del('users');
-    await this.cacheManager.del(`user-${id}`);
+    await this.cacheService.delCache(`users`);
+    await this.cacheService.delCache(`user-${id}`);
 
     return {
       message: `User with id '${id}' deleted`,
