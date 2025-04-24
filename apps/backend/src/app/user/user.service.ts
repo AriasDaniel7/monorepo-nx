@@ -41,8 +41,8 @@ export class UserService {
 
       delete user.password;
 
-      await this.cacheService.clearCache();
-      await this.cacheService.setCache(`user-${user.id}`, user);
+      await this.cacheService.clearPatternCache(`users-list`);
+      await this.cacheService.setCache(`user-${user.id}`, user, 86400);
 
       return {
         user,
@@ -55,9 +55,9 @@ export class UserService {
   async findAll(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
 
-    const cacheUsers = await this.cacheService.getCache<UserResponse>(
-      `users-${limit}-${offset}`,
-    );
+    const cacheKey = `users-${limit}-${offset}`;
+
+    const cacheUsers = await this.cacheService.getCache<UserResponse>(cacheKey);
 
     if (cacheUsers) return cacheUsers;
 
@@ -77,7 +77,8 @@ export class UserService {
       users: users,
     };
 
-    await this.cacheService.setCache(`users-${limit}-${offset}`, response);
+    await this.cacheService.setCache(cacheKey, response, 86400);
+    await this.cacheService.registerCacheKey('users-list', cacheKey, 86400);
 
     return response;
   }
@@ -97,7 +98,7 @@ export class UserService {
       throw new NotFoundException(`User with id '${id}' not found`);
     }
 
-    await this.cacheService.setCache(`user-${id}`, user);
+    await this.cacheService.setCache(`user-${id}`, user, 86400);
 
     return user;
   }
@@ -125,8 +126,8 @@ export class UserService {
 
       delete user.password;
 
-      await this.cacheService.clearCache();
-      await this.cacheService.setCache(`user-${user.id}`, user);
+      await this.cacheService.clearPatternCache(`users-list`);
+      await this.cacheService.setCache(`user-${user.id}`, user, 86400);
 
       return user;
     } catch (error) {
@@ -135,10 +136,12 @@ export class UserService {
   }
 
   async remove(id: string) {
-    const user = (await this.findOne(id)) as User;
+    const user = await this.findOne(id);
 
     await this.userRepository.remove(user);
-    await this.cacheService.clearCache();
+
+    await this.cacheService.clearPatternCache(`users-list`);
+    await this.cacheService.delCache(`user-${id}`);
 
     return {
       message: `User with id '${id}' deleted`,

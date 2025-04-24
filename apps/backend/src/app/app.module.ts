@@ -4,11 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
-import { createKeyv } from '@keyv/redis';
+import KeyvRedis, { RedisClientOptions } from '@keyv/redis';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Keyv } from 'keyv';
-import { CacheableMemory } from 'cacheable';
+import { Cacheable } from 'cacheable';
 
 import { CommonModule } from './common/common.module';
 import { UserModule } from '@user/user.module';
@@ -23,16 +23,23 @@ import { UserModule } from '@user/user.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       isGlobal: true,
-      useFactory: async (configService: ConfigService) => {
-        const redisPassword = configService.get<string>('REDIS_PASSWORD');
-        const redisUrl = `redis://:${redisPassword}@${configService.get<string>('REDIS_HOST')}:${configService.get<number>('REDIS_PORT')}`;
+      useFactory: (configService: ConfigService) => {
+        const redisOptions: RedisClientOptions = {
+          password: configService.get<string>('REDIS_PASSWORD'),
+          socket: {
+            host: configService.get<string>('REDIS_HOST'),
+            port: configService.get<number>('REDIS_PORT'),
+            reconnectStrategy: (retries) => Math.min(retries * 50, 2000),
+          },
+        };
+
+        const secondary = new KeyvRedis(redisOptions);
 
         return {
           stores: [
             new Keyv({
-              store: new CacheableMemory({ ttl: 60000, lruSize: 5000 }),
+              store: new Cacheable({ secondary, nonBlocking: true }),
             }),
-            createKeyv(redisUrl),
           ],
         };
       },
