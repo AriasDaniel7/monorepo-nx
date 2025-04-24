@@ -39,10 +39,10 @@ export class UserService {
 
       await this.userRepository.save(user);
 
-      await this.cacheService.setCache(`user-${user.id}`, user);
-      await this.cacheService.delCache(`users`);
-
       delete user.password;
+
+      await this.cacheService.clearCache();
+      await this.cacheService.setCache(`user-${user.id}`, user);
 
       return {
         user,
@@ -55,9 +55,9 @@ export class UserService {
   async findAll(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
 
-    const key = 'users';
-
-    const cacheUsers = await this.cacheService.getCache<UserResponse>(`users`);
+    const cacheUsers = await this.cacheService.getCache<UserResponse>(
+      `users-${limit}-${offset}`,
+    );
 
     if (cacheUsers) return cacheUsers;
 
@@ -77,7 +77,7 @@ export class UserService {
       users: users,
     };
 
-    await this.cacheService.setCache(`users`, response);
+    await this.cacheService.setCache(`users-${limit}-${offset}`, response);
 
     return response;
   }
@@ -123,10 +123,10 @@ export class UserService {
     try {
       await this.userRepository.save(user);
 
-      await this.cacheService.setCache(`user-${user.id}`, user);
-      await this.cacheService.delCache(`users`);
-
       delete user.password;
+
+      await this.cacheService.clearCache();
+      await this.cacheService.setCache(`user-${user.id}`, user);
 
       return user;
     } catch (error) {
@@ -138,8 +138,7 @@ export class UserService {
     const user = (await this.findOne(id)) as User;
 
     await this.userRepository.remove(user);
-    await this.cacheService.delCache(`users`);
-    await this.cacheService.delCache(`user-${id}`);
+    await this.cacheService.clearCache();
 
     return {
       message: `User with id '${id}' deleted`,
