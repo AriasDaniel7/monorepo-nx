@@ -20,11 +20,7 @@ async function bootstrap() {
   app.use(helmet());
 
   //Enable CORS
-  app.enableCors({
-    origin: ['https://danielarias.site', 'http://localhost:3000'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    credentials: true,
-  });
+  app.enableCors(['http://localhost:3000', 'https://danielarias.site']);
 
   // Validation pipe
   app.useGlobalPipes(
