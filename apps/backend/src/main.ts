@@ -1,8 +1,3 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -15,7 +10,9 @@ async function bootstrap() {
 
   // Global prefix for all routes
   const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
+  app.setGlobalPrefix(globalPrefix, {
+    exclude: ['/favicon.ico'], // Excluir favicon.ico del prefijo global
+  });
 
   // Habilitar compresión
   app.use(compression());
@@ -41,7 +38,7 @@ async function bootstrap() {
             'https://*.cloudflareinsights.com',
           ],
           styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
-          imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+          imgSrc: ["'self'", 'data:', 'https:', 'blob:', '/favicon.ico'],
           connectSrc: [
             "'self'",
             'https://danielarias.site',
@@ -62,6 +59,16 @@ async function bootstrap() {
       crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
     }),
   );
+
+  // Favicon handler - Middleware específico para el favicon
+  app.use((req, res, next) => {
+    if (req.originalUrl === '/favicon.ico') {
+      res.setHeader('Content-Type', 'image/x-icon');
+      next();
+    } else {
+      next();
+    }
+  });
 
   // Configuración correcta de CORS
   app.enableCors({
