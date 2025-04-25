@@ -20,7 +20,7 @@ async function bootstrap() {
   // Habilitar compresión
   app.use(compression());
 
-  // Seguridad con configuración ajustada
+  // Seguridad con configuración ajustada para Angular + Cloudflare
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -31,28 +31,45 @@ async function bootstrap() {
             "'unsafe-inline'",
             "'unsafe-eval'",
             'https://static.cloudflareinsights.com',
+            'https://*.cloudflareinsights.com',
+          ],
+          scriptSrcElem: [
+            "'self'",
+            "'unsafe-inline'",
+            "'unsafe-eval'",
+            'https://static.cloudflareinsights.com',
+            'https://*.cloudflareinsights.com',
           ],
           styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
-          imgSrc: ["'self'", 'data:', 'https:'],
+          imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
           connectSrc: [
             "'self'",
             'https://danielarias.site',
+            'wss://danielarias.site',
             'https://*.cloudflareinsights.com',
+            'https://cloudflareinsights.com',
           ],
-          fontSrc: ["'self'", 'https:'],
+          fontSrc: ["'self'", 'https:', 'data:'],
           objectSrc: ["'none'"],
-          mediaSrc: ["'self'"],
+          mediaSrc: ["'self'", 'https:'],
           frameSrc: ["'self'"],
+          baseUri: ["'self'"],
+          formAction: ["'self'"],
         },
       },
       crossOriginResourcePolicy: { policy: 'cross-origin' },
       crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
     }),
   );
 
   // Configuración correcta de CORS
   app.enableCors({
-    origin: ['https://danielarias.site', 'http://localhost:4200'],
+    origin: [
+      'https://danielarias.site',
+      'http://localhost:4200',
+      'https://www.danielarias.site',
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
