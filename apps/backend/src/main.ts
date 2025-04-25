@@ -21,9 +21,7 @@ async function bootstrap() {
   app.use(compression());
 
   // Configuración correcta de CORS
-  app.enableCors({
-    origin: ['https://danielarias.site'],
-  });
+  app.enableCors();
 
   // app.use(helmet());
 
