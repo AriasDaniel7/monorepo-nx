@@ -19,7 +19,6 @@ async function bootstrap() {
 
   // Habilitar compresión
   app.use(compression());
-  app.use(helmet());
 
   // Configuración correcta de CORS
   app.enableCors([
