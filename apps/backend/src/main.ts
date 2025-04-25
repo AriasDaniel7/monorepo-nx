@@ -36,7 +36,7 @@ async function bootstrap() {
           imgSrc: ["'self'", 'data:', 'https:'],
           connectSrc: [
             "'self'",
-            'https://danielarias.site/*',
+            'https://danielarias.site',
             'https://*.cloudflareinsights.com',
           ],
           fontSrc: ["'self'", 'https:'],
