@@ -2,7 +2,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
-import helmet from 'helmet';
+// import helmet from 'helmet';
 import compression from 'compression';
 
 async function bootstrap() {
@@ -10,73 +10,14 @@ async function bootstrap() {
 
   // Global prefix for all routes
   const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix, {
-    exclude: ['/favicon.ico'], // Excluir favicon.ico del prefijo global
-  });
+  app.setGlobalPrefix(globalPrefix);
 
   // Habilitar compresión
   app.use(compression());
 
-  // Seguridad con configuración ajustada para Angular + Cloudflare
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: [
-            "'self'",
-            "'unsafe-inline'",
-            "'unsafe-eval'",
-            'https://static.cloudflareinsights.com',
-            'https://*.cloudflareinsights.com',
-          ],
-          scriptSrcElem: [
-            "'self'",
-            "'unsafe-inline'",
-            "'unsafe-eval'",
-            'https://static.cloudflareinsights.com',
-            'https://*.cloudflareinsights.com',
-          ],
-          styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
-          imgSrc: ["'self'", 'data:', 'https:', 'blob:', '/favicon.ico'],
-          connectSrc: [
-            "'self'",
-            'https://danielarias.site',
-            'wss://danielarias.site',
-            'https://*.cloudflareinsights.com',
-            'https://cloudflareinsights.com',
-          ],
-          fontSrc: ["'self'", 'https:', 'data:'],
-          objectSrc: ["'none'"],
-          mediaSrc: ["'self'", 'https:'],
-          frameSrc: ["'self'"],
-          baseUri: ["'self'"],
-          formAction: ["'self'"],
-        },
-      },
-      crossOriginResourcePolicy: { policy: 'cross-origin' },
-      crossOriginEmbedderPolicy: false,
-      crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
-    }),
-  );
-
-  // Favicon handler - Middleware específico para el favicon
-  app.use((req, res, next) => {
-    if (req.originalUrl === '/favicon.ico') {
-      res.setHeader('Content-Type', 'image/x-icon');
-      next();
-    } else {
-      next();
-    }
-  });
-
   // Configuración correcta de CORS
   app.enableCors({
-    origin: [
-      'https://danielarias.site',
-      'http://localhost:4200',
-      'https://www.danielarias.site',
-    ],
+    origin: ['https://danielarias.site'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
