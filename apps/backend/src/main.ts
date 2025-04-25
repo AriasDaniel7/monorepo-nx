@@ -7,7 +7,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
-import helmet from 'helmet';
+// import helmet from 'helmet';
 import compression from 'compression';
 
 async function bootstrap() {
@@ -19,6 +19,7 @@ async function bootstrap() {
 
   // Habilitar compresión
   app.use(compression());
+
   // Configuración correcta de CORS
   app.enableCors([
     'https://danielarias.site',
@@ -26,7 +27,7 @@ async function bootstrap() {
     'https://www.danielarias.site',
   ]);
 
-  app.use(helmet());
+  // app.use(helmet());
 
   // Validation pipe
   app.useGlobalPipes(
