@@ -19,13 +19,14 @@ async function bootstrap() {
 
   // Habilitar compresión
   app.use(compression());
-
   // Configuración correcta de CORS
   app.enableCors([
     'https://danielarias.site',
     'http://localhost:4200',
     'https://www.danielarias.site',
   ]);
+
+  app.use(helmet());
 
   // Validation pipe
   app.useGlobalPipes(
