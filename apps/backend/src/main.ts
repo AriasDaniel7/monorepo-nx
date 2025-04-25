@@ -22,7 +22,11 @@ async function bootstrap() {
   // app.use(helmet());
 
   // Configuración correcta de CORS
-  app.enableCors('https://danielarias.site');
+  app.enableCors([
+    'https://danielarias.site',
+    'https://static.cloudflareinsights.com',
+    'https://*.cloudflareinsights.com',
+  ]);
 
   // Validation pipe
   app.useGlobalPipes(
