@@ -7,8 +7,8 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
-// import helmet from 'helmet';
-// import compression from 'compression';
+import helmet from 'helmet';
+import compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,12 +18,11 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
 
   // Habilitar compresión
-  // app.use(compression());
+  app.use(compression());
+  app.use(helmet());
 
   // Configuración correcta de CORS
-  app.enableCors();
-
-  // app.use(helmet());
+  app.enableCors('https://danielarias.site');
 
   // Validation pipe
   app.useGlobalPipes(
