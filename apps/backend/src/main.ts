@@ -29,7 +29,6 @@ async function bootstrap() {
       'https://www.danielarias.site',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    credentials: true,
   });
 
   // Validation pipe
