@@ -129,7 +129,10 @@ export class UserService {
 
     const { roles, password, ...userData } = updateUserDto;
 
-    const existingUser = await this.userRepository.findOneBy({ id });
+    const existingUser = await this.userRepository.findOne({
+      where: { id },
+      relations: { roles: true },
+    });
 
     if (!existingUser) {
       throw new NotFoundException(`User with id '${id}' not found`);
@@ -154,6 +157,7 @@ export class UserService {
       await this.cacheService.clearPatternCache(`users-list`);
       await this.cacheService.clearPatternCache(`roles-list`);
       const cacheKey = `user-${id}`;
+
       await this.cacheService.setCache(
         cacheKey,
         UserMapper.mapperRoleToUser(user),
