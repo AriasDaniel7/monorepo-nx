@@ -17,10 +17,10 @@ async function bootstrap() {
 
   // Configuración correcta de CORS
   app.enableCors({
-    origin: ['https://danielarias.site'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    origin: [
+      'https://danielarias.site',
+      'https://static.cloudflareinsights.com',
+    ],
   });
 
   // Validation pipe
