@@ -1,10 +1,10 @@
-export interface UserResponse {
+export interface IUserResponse {
   count: number;
   pages: number;
-  users: User[];
+  users: IUser[];
 }
 
-export interface User {
+export interface IUser {
   id: string;
   firstName: string;
   lastName: string;

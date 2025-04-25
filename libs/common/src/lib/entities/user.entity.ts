@@ -1,4 +1,3 @@
-import { Role } from '@role/entities/role.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,37 +7,38 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Role } from './role.entity';
 
 @Entity('user')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({
     type: 'text',
     name: 'first_name',
   })
-  firstName: string;
+  firstName!: string;
 
   @Column({
     type: 'text',
     name: 'last_name',
   })
-  lastName: string;
+  lastName!: string;
 
   @Column({
     type: 'text',
     name: 'email',
     unique: true,
   })
-  email: string;
+  email!: string;
 
   @Column({
     type: 'text',
     name: 'password',
     select: false,
   })
-  password: string;
+  password!: string;
 
   //   @Column({
   //     type: 'text',
@@ -50,21 +50,21 @@ export class User {
     type: 'integer',
     name: 'age',
   })
-  age: number;
+  age!: number;
 
   @Column({
     type: 'text',
     name: 'blood_type',
   })
-  bloodType: string;
+  bloodType!: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ManyToMany(() => Role, (role) => role.users, { onDelete: 'RESTRICT' })
   @JoinTable({ name: 'user_roles' })
-  roles: Role[];
+  roles!: Role[];
 }

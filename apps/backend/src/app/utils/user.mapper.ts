@@ -1,5 +1,4 @@
-import { Role } from '@role/entities/role.entity';
-import { User } from '@user/entities/user.entity';
+import { Role, User } from '@libs/common/entities';
 
 export class UserMapper {
   static mapperRoleToUsers(users: User[]) {

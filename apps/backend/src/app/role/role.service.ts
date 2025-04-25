@@ -5,22 +5,21 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
-  Query,
 } from '@nestjs/common';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
-import { CacheService } from '@common/cache/cache.service';
-import { Repository } from 'typeorm';
-import { Role } from './entities/role.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationDto } from '@common/dtos/pagination.dto';
-import { UserResponse } from '@common/interfaces/user-response.interface';
+
+import { Repository } from 'typeorm';
 import { isUUID } from 'class-validator';
+
+import { CacheManagerService } from '../cache-manager/cache-manager.service';
+
+import { Role } from '@libs/common/entities';
+import { CreateRoleDto, PaginationDto, UpdateRoleDto } from '@libs/common/dtos';
 
 @Injectable()
 export class RoleService {
   constructor(
-    private cacheService: CacheService,
+    private cacheManagerService: CacheManagerService,
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
   ) {}
 
@@ -30,8 +29,8 @@ export class RoleService {
 
       await this.roleRepository.save(role);
 
-      await this.cacheService.clearPatternCache(`roles-list`);
-      await this.cacheService.setCache(`role-${role.id}`, role, 86400);
+      await this.cacheManagerService.clearPatternCache(`roles-list`);
+      await this.cacheManagerService.setCache(`role-${role.id}`, role, 86400);
 
       return role;
     } catch (error) {
@@ -44,7 +43,7 @@ export class RoleService {
 
     const cacheKey = `roles-${limit}-${offset}`;
 
-    const cacheUsers = await this.cacheService.getCache(cacheKey); // TODO: Verify if this is correct
+    const cacheUsers = await this.cacheManagerService.getCache(cacheKey); // TODO: Verify if this is correct
 
     if (cacheUsers) return cacheUsers;
 
@@ -64,8 +63,12 @@ export class RoleService {
       roles: roles,
     };
 
-    await this.cacheService.setCache(cacheKey, response, 86400);
-    await this.cacheService.registerCacheKey('roles-list', cacheKey, 86400);
+    await this.cacheManagerService.setCache(cacheKey, response, 86400);
+    await this.cacheManagerService.registerCacheKey(
+      'roles-list',
+      cacheKey,
+      86400,
+    );
 
     return response;
   }
@@ -73,7 +76,7 @@ export class RoleService {
   async findOne(id: string) {
     let role: Role;
 
-    role = await this.cacheService.getCache<Role>(`role-${id}`);
+    role = await this.cacheManagerService.getCache<Role>(`role-${id}`);
 
     if (role) return role;
 
@@ -85,7 +88,7 @@ export class RoleService {
       throw new NotFoundException(`Role with id ${id} not found`);
     }
 
-    await this.cacheService.setCache(`role-${id}`, role, 86400);
+    await this.cacheManagerService.setCache(`role-${id}`, role, 86400);
 
     return role;
   }
@@ -105,10 +108,10 @@ export class RoleService {
     try {
       await this.roleRepository.save(role);
 
-      await this.cacheService.clearPatternCache(`roles-list`);
-      await this.cacheService.clearPatternCache(`users-list`);
-      await this.cacheService.clearPatternCache(`user-id-list`);
-      await this.cacheService.setCache(`role-${id}`, role, 86400);
+      await this.cacheManagerService.clearPatternCache(`roles-list`);
+      await this.cacheManagerService.clearPatternCache(`users-list`);
+      await this.cacheManagerService.clearPatternCache(`user-id-list`);
+      await this.cacheManagerService.setCache(`role-${id}`, role, 86400);
 
       return role;
     } catch (error) {
@@ -132,9 +135,9 @@ export class RoleService {
 
     await this.roleRepository.remove(role);
 
-    await this.cacheService.clearPatternCache(`roles-list`);
-    await this.cacheService.clearPatternCache(`users-list`);
-    await this.cacheService.delCache(`role-${id}`);
+    await this.cacheManagerService.clearPatternCache(`roles-list`);
+    await this.cacheManagerService.clearPatternCache(`users-list`);
+    await this.cacheManagerService.delCache(`role-${id}`);
 
     return {
       message: `Role with id '${id}' deleted`,

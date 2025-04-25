@@ -4,11 +4,11 @@ export class CreateRoleDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
-  name: string;
+  name!: string;
 
   @IsString()
   @IsNotEmpty()
   @IsOptional()
   @MinLength(10)
-  description: string;
+  description!: string;
 }

@@ -5,21 +5,12 @@
   "references": [
     {
       "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
     }
   ],
   "compilerOptions": {
     "esModuleInterop": true,
-    "baseUrl": "./",
-    "paths": {
-      "@user/*": [
-        "./src/app/user/*"
-      ],
-      "@role/*": [
-        "./src/app/role/*"
-      ],
-      "@common/*": [
-        "./src/app/common/*"
-      ],
-    }
   }
 }

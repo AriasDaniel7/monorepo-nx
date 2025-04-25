@@ -10,9 +10,9 @@ import { join } from 'path';
 import { Keyv } from 'keyv';
 import { Cacheable } from 'cacheable';
 
-import { CommonModule } from './common/common.module';
-import { UserModule } from '@user/user.module';
 import { RoleModule } from './role/role.module';
+import { UserModule } from './user/user.module';
+import { CacheManagerModule } from './cache-manager/cache-manager.module';
 
 @Module({
   imports: [
@@ -91,7 +91,7 @@ import { RoleModule } from './role/role.module';
       },
     }),
     UserModule,
-    CommonModule,
+    CacheManagerModule,
     RoleModule,
   ],
   controllers: [],

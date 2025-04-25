@@ -10,9 +10,7 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
-import { PaginationDto } from '@common/dtos/pagination.dto';
+import { CreateRoleDto, PaginationDto, UpdateRoleDto } from '@libs/common/dtos';
 
 @Controller()
 export class RoleController {

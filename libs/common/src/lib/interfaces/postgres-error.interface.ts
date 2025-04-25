@@ -1,4 +1,4 @@
-export interface PostgresError {
+export interface IPostgresError {
   code: string;
   detail: string;
 }

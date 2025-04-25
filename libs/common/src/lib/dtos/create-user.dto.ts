@@ -13,17 +13,17 @@ import {
 
 export class CreateUserDto {
   @IsString()
-  firstName: string;
+  firstName!: string;
 
   @IsString()
-  lastName: string;
+  lastName!: string;
 
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(8)
-  password: string;
+  password!: string;
 
   //   @IsString()
   //   taxId: string;
@@ -31,11 +31,11 @@ export class CreateUserDto {
   @IsNumber()
   @Min(0)
   @Max(80)
-  age: number;
+  age!: number;
 
   @IsString()
   @IsIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
-  bloodType: string;
+  bloodType!: string;
 
   @IsString({ each: true })
   @IsArray()

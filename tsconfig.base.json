@@ -17,6 +17,17 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "paths": {
+      "@libs/common/dtos": [
+        "libs/common/src/lib/dtos/index.ts"
+      ],
+      "@libs/common/interfaces": [
+        "libs/common/src/lib/interfaces/index.ts"
+      ],
+      "@libs/common/entities": [
+        "libs/common/src/lib/entities/index.ts"
+      ]
+    }
   },
   "exclude": [
     "node_modules",

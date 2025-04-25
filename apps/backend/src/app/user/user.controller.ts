@@ -9,10 +9,9 @@ import {
   Query,
   ParseUUIDPipe,
 } from '@nestjs/common';
+
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { PaginationDto } from '@common/dtos/pagination.dto';
+import { CreateUserDto, PaginationDto, UpdateUserDto } from '@libs/common/dtos';
 
 @Controller()
 export class UserController {

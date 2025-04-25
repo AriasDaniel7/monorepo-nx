@@ -12,22 +12,17 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { isUUID } from 'class-validator';
 
-import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-
-import { PostgresError } from '@common/interfaces/postgres-error.interface';
-import { PaginationDto } from '@common/dtos/pagination.dto';
-import { CacheService } from '@common/cache/cache.service';
-import { UserResponse } from '@common/interfaces/user-response.interface';
-import { Role } from '@role/entities/role.entity';
-import { UserMapper } from '@common/mapper/user.mapper';
+import { Role, User } from '@libs/common/entities';
+import { CreateUserDto, PaginationDto, UpdateUserDto } from '@libs/common/dtos';
+import { IPostgresError, IUserResponse } from '@libs/common/interfaces';
+import { CacheManagerService } from '../cache-manager/cache-manager.service';
+import { UserMapper } from '../utils/user.mapper';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    private cacheService: CacheService,
+    private cacheManagerService: CacheManagerService,
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
   ) {}
 
@@ -47,15 +42,19 @@ export class UserService {
       delete user.password;
 
       //Cache
-      await this.cacheService.clearPatternCache(`users-list`);
-      await this.cacheService.clearPatternCache(`roles-list`);
+      await this.cacheManagerService.clearPatternCache(`users-list`);
+      await this.cacheManagerService.clearPatternCache(`roles-list`);
       const cacheKey = `user-${user.id}`;
-      await this.cacheService.setCache(
+      await this.cacheManagerService.setCache(
         cacheKey,
         UserMapper.mapperRoleToUser(user),
         86400,
       );
-      await this.cacheService.registerCacheKey('user-id-list', cacheKey, 86400);
+      await this.cacheManagerService.registerCacheKey(
+        'user-id-list',
+        cacheKey,
+        86400,
+      );
 
       return UserMapper.mapperRoleToUser(user);
     } catch (error) {
@@ -68,7 +67,8 @@ export class UserService {
 
     const cacheKey = `users-${limit}-${offset}`;
 
-    const cacheUsers = await this.cacheService.getCache<UserResponse>(cacheKey);
+    const cacheUsers =
+      await this.cacheManagerService.getCache<IUserResponse>(cacheKey);
 
     if (cacheUsers) return cacheUsers;
 
@@ -89,8 +89,12 @@ export class UserService {
       users: UserMapper.mapperRoleToUsers(users),
     };
 
-    await this.cacheService.setCache(cacheKey, response, 86400);
-    await this.cacheService.registerCacheKey('users-list', cacheKey, 86400);
+    await this.cacheManagerService.setCache(cacheKey, response, 86400);
+    await this.cacheManagerService.registerCacheKey(
+      'users-list',
+      cacheKey,
+      86400,
+    );
 
     return response;
   }
@@ -98,7 +102,7 @@ export class UserService {
   async findOne(id: string) {
     let user: User;
 
-    user = await this.cacheService.getCache<User>(`user-${id}`);
+    user = await this.cacheManagerService.getCache<User>(`user-${id}`);
 
     if (user) return user;
 
@@ -114,12 +118,16 @@ export class UserService {
     }
 
     const cacheKey = `user-${id}`;
-    await this.cacheService.setCache(
+    await this.cacheManagerService.setCache(
       cacheKey,
       UserMapper.mapperRoleToUser(user),
       86400,
     );
-    await this.cacheService.registerCacheKey('user-id-list', cacheKey, 86400);
+    await this.cacheManagerService.registerCacheKey(
+      'user-id-list',
+      cacheKey,
+      86400,
+    );
 
     return UserMapper.mapperRoleToUser(user);
   }
@@ -154,16 +162,20 @@ export class UserService {
 
       delete user.password;
 
-      await this.cacheService.clearPatternCache(`users-list`);
-      await this.cacheService.clearPatternCache(`roles-list`);
+      await this.cacheManagerService.clearPatternCache(`users-list`);
+      await this.cacheManagerService.clearPatternCache(`roles-list`);
       const cacheKey = `user-${id}`;
 
-      await this.cacheService.setCache(
+      await this.cacheManagerService.setCache(
         cacheKey,
         UserMapper.mapperRoleToUser(user),
         86400,
       );
-      await this.cacheService.registerCacheKey('user-id-list', cacheKey, 86400);
+      await this.cacheManagerService.registerCacheKey(
+        'user-id-list',
+        cacheKey,
+        86400,
+      );
 
       return UserMapper.mapperRoleToUser(user);
     } catch (error) {
@@ -176,8 +188,8 @@ export class UserService {
 
     await this.userRepository.remove(user);
 
-    await this.cacheService.clearPatternCache(`users-list`);
-    await this.cacheService.delCache(`user-${id}`);
+    await this.cacheManagerService.clearPatternCache(`users-list`);
+    await this.cacheManagerService.delCache(`user-${id}`);
 
     return {
       message: `User with id '${id}' deleted`,
@@ -186,7 +198,7 @@ export class UserService {
 
   private handleError(error: any) {
     if (error.code === '23505') {
-      const err = error as PostgresError;
+      const err = error as IPostgresError;
 
       const field = this.extractFieldFromDetail(err.detail);
       throw new ConflictException(

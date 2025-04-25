@@ -1,4 +1,4 @@
-import { User } from '@user/entities/user.entity';
+
 import {
   Column,
   CreateDateColumn,
@@ -7,18 +7,19 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from './user.entity';
 
 @Entity('roles')
 export class Role {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({
     type: 'text',
     name: 'name',
     unique: true,
   })
-  name: string;
+  name!: string;
 
   @Column({
     type: 'text',
@@ -26,14 +27,14 @@ export class Role {
     default: null,
     nullable: true,
   })
-  description: string;
+  description!: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ManyToMany(() => User, (user) => user.roles)
-  users: User[];
+  users!: User[];
 }
