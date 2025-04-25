@@ -22,7 +22,7 @@ async function bootstrap() {
   //Enable CORS
   app.enableCors({
     origin: ['https://danielarias.site', 'http://localhost:3000'],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
   });
 
