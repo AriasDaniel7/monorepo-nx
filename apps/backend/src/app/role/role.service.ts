@@ -107,6 +107,7 @@ export class RoleService {
 
       await this.cacheService.clearPatternCache(`roles-list`);
       await this.cacheService.clearPatternCache(`users-list`);
+      await this.cacheService.clearPatternCache(`user-id-list`);
       await this.cacheService.setCache(`role-${id}`, role, 86400);
 
       return role;

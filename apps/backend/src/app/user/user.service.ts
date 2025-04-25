@@ -49,11 +49,13 @@ export class UserService {
       //Cache
       await this.cacheService.clearPatternCache(`users-list`);
       await this.cacheService.clearPatternCache(`roles-list`);
+      const cacheKey = `user-${user.id}`;
       await this.cacheService.setCache(
-        `user-${user.id}`,
+        cacheKey,
         UserMapper.mapperRoleToUser(user),
         86400,
       );
+      await this.cacheService.registerCacheKey('user-id-list', cacheKey, 86400);
 
       return UserMapper.mapperRoleToUser(user);
     } catch (error) {
@@ -111,7 +113,9 @@ export class UserService {
       throw new NotFoundException(`User with id '${id}' not found`);
     }
 
-    await this.cacheService.setCache(`user-${id}`, user, 86400);
+    const cacheKey = `user-${id}`;
+    await this.cacheService.setCache(cacheKey, user, 86400);
+    await this.cacheService.registerCacheKey('user-id-list', cacheKey, 86400);
 
     return UserMapper.mapperRoleToUser(user);
   }
@@ -145,11 +149,9 @@ export class UserService {
 
       await this.cacheService.clearPatternCache(`users-list`);
       await this.cacheService.clearPatternCache(`roles-list`);
-      await this.cacheService.setCache(
-        `user-${user.id}`,
-        UserMapper.mapperRoleToUser(user),
-        86400,
-      );
+      const cacheKey = `user-${id}`;
+      await this.cacheService.setCache(cacheKey, user, 86400);
+      await this.cacheService.registerCacheKey('user-id-list', cacheKey, 86400);
 
       return UserMapper.mapperRoleToUser(user);
     } catch (error) {
