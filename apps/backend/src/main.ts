@@ -19,49 +19,7 @@ async function bootstrap() {
 
   // Habilitar compresión
   app.use(compression());
-
-  // Seguridad con configuración ajustada para Angular + Cloudflare
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: [
-            "'self'",
-            "'unsafe-inline'",
-            "'unsafe-eval'",
-            'https://static.cloudflareinsights.com',
-            'https://*.cloudflareinsights.com',
-          ],
-          scriptSrcElem: [
-            "'self'",
-            "'unsafe-inline'",
-            "'unsafe-eval'",
-            'https://static.cloudflareinsights.com',
-            'https://*.cloudflareinsights.com',
-          ],
-          styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
-          imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
-          connectSrc: [
-            "'self'",
-            'https://danielarias.site',
-            'wss://danielarias.site',
-            'https://*.cloudflareinsights.com',
-            'https://cloudflareinsights.com',
-          ],
-          fontSrc: ["'self'", 'https:', 'data:'],
-          objectSrc: ["'none'"],
-          mediaSrc: ["'self'", 'https:'],
-          frameSrc: ["'self'"],
-          baseUri: ["'self'"],
-          formAction: ["'self'"],
-        },
-      },
-      crossOriginResourcePolicy: { policy: 'cross-origin' },
-      crossOriginEmbedderPolicy: false,
-      crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
-    }),
-  );
+  app.use(helmet());
 
   // Configuración correcta de CORS
   app.enableCors({
