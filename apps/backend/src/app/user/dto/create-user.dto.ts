@@ -1,7 +1,10 @@
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsEmail,
   IsIn,
   IsNumber,
+  IsOptional,
   IsString,
   Max,
   Min,
@@ -33,4 +36,11 @@ export class CreateUserDto {
   @IsString()
   @IsIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
   bloodType: string;
+
+  @IsString({ each: true })
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsOptional()
+  @IsIn(['admin', 'user'], { each: true })
+  roles?: string[];
 }

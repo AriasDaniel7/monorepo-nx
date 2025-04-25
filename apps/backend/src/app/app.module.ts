@@ -12,6 +12,7 @@ import { Cacheable } from 'cacheable';
 
 import { CommonModule } from './common/common.module';
 import { UserModule } from '@user/user.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -91,6 +92,7 @@ import { UserModule } from '@user/user.module';
     }),
     UserModule,
     CommonModule,
+    RoleModule,
   ],
   controllers: [],
   providers: [],

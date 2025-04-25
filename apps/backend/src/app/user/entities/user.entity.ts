@@ -1,7 +1,10 @@
+import { Role } from '@role/entities/role.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -60,4 +63,8 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToMany(() => Role, (role) => role.users, { onDelete: 'RESTRICT' })
+  @JoinTable({ name: 'user_roles' })
+  roles: Role[];
 }

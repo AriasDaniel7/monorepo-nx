@@ -20,33 +20,42 @@ import { PostgresError } from '@common/interfaces/postgres-error.interface';
 import { PaginationDto } from '@common/dtos/pagination.dto';
 import { CacheService } from '@common/cache/cache.service';
 import { UserResponse } from '@common/interfaces/user-response.interface';
+import { Role } from '@role/entities/role.entity';
+import { UserMapper } from '@common/mapper/user.mapper';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private cacheService: CacheService,
+    @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const { password, ...userData } = createUserDto;
+      const { password, roles = ['user'], ...userData } = createUserDto;
 
       const user = this.userRepository.create({
         ...userData,
         password: bcrypt.hashSync(password, 10),
       });
 
+      user.roles = await this.rolesUser(roles);
+
       await this.userRepository.save(user);
 
       delete user.password;
 
+      //Cache
       await this.cacheService.clearPatternCache(`users-list`);
-      await this.cacheService.setCache(`user-${user.id}`, user, 86400);
+      await this.cacheService.clearPatternCache(`roles-list`);
+      await this.cacheService.setCache(
+        `user-${user.id}`,
+        UserMapper.mapperRoleToUser(user),
+        86400,
+      );
 
-      return {
-        user,
-      };
+      return UserMapper.mapperRoleToUser(user);
     } catch (error) {
       this.handleError(error);
     }
@@ -67,6 +76,7 @@ export class UserService {
       order: {
         id: 'ASC',
       },
+      relations: { roles: true },
     });
 
     const totalUsers = await this.userRepository.count();
@@ -74,7 +84,7 @@ export class UserService {
     const response = {
       count: totalUsers,
       pages: Math.ceil(totalUsers / limit),
-      users: users,
+      users: UserMapper.mapperRoleToUsers(users),
     };
 
     await this.cacheService.setCache(cacheKey, response, 86400);
@@ -91,7 +101,10 @@ export class UserService {
     if (user) return user;
 
     if (isUUID(id)) {
-      user = await this.userRepository.findOneBy({ id });
+      user = await this.userRepository.findOne({
+        where: { id },
+        relations: { roles: true },
+      });
     }
 
     if (!user) {
@@ -100,43 +113,52 @@ export class UserService {
 
     await this.cacheService.setCache(`user-${id}`, user, 86400);
 
-    return user;
+    return UserMapper.mapperRoleToUser(user);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    if (!updateUserDto) throw new BadRequestException(`Update data is empty`);
+    if (!updateUserDto) throw new BadRequestException('Update data is empty');
 
-    const { password, ...userData } = updateUserDto;
+    const { roles, password, ...userData } = updateUserDto;
+
+    const existingUser = await this.userRepository.findOneBy({ id });
+
+    if (!existingUser) {
+      throw new NotFoundException(`User with id '${id}' not found`);
+    }
 
     const user = await this.userRepository.preload({
       id,
       ...userData,
     });
 
-    if (!user) {
-      throw new NotFoundException(`User with id '${id}' not found`);
-    }
-
     if (password) {
       user.password = bcrypt.hashSync(password, 10);
     }
 
     try {
+      user.roles = roles ? await this.rolesUser(roles) : existingUser.roles;
+
       await this.userRepository.save(user);
 
       delete user.password;
 
       await this.cacheService.clearPatternCache(`users-list`);
-      await this.cacheService.setCache(`user-${user.id}`, user, 86400);
+      await this.cacheService.clearPatternCache(`roles-list`);
+      await this.cacheService.setCache(
+        `user-${user.id}`,
+        UserMapper.mapperRoleToUser(user),
+        86400,
+      );
 
-      return user;
+      return UserMapper.mapperRoleToUser(user);
     } catch (error) {
       this.handleError(error);
     }
   }
 
   async remove(id: string) {
-    const user = await this.findOne(id);
+    const user = (await this.findOne(id)) as User;
 
     await this.userRepository.remove(user);
 
@@ -168,5 +190,21 @@ export class UserService {
   private extractFieldFromDetail(detail: string): string {
     const matches = detail.match(/Key \(([^)]+)\)=/);
     return matches ? matches[1] : 'valor';
+  }
+
+  private async rolesUser(roles: string[]) {
+    return await Promise.all(
+      roles.map(async (name) => {
+        let role: Role;
+
+        role = await this.roleRepository.findOneBy({ name });
+
+        if (!role) {
+          role = this.roleRepository.create({ name });
+          await this.roleRepository.save(role);
+        }
+        return role;
+      }),
+    );
   }
 }
