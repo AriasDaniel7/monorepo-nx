@@ -114,7 +114,11 @@ export class UserService {
     }
 
     const cacheKey = `user-${id}`;
-    await this.cacheService.setCache(cacheKey, user, 86400);
+    await this.cacheService.setCache(
+      cacheKey,
+      UserMapper.mapperRoleToUser(user),
+      86400,
+    );
     await this.cacheService.registerCacheKey('user-id-list', cacheKey, 86400);
 
     return UserMapper.mapperRoleToUser(user);
@@ -150,7 +154,11 @@ export class UserService {
       await this.cacheService.clearPatternCache(`users-list`);
       await this.cacheService.clearPatternCache(`roles-list`);
       const cacheKey = `user-${id}`;
-      await this.cacheService.setCache(cacheKey, user, 86400);
+      await this.cacheService.setCache(
+        cacheKey,
+        UserMapper.mapperRoleToUser(user),
+        86400,
+      );
       await this.cacheService.registerCacheKey('user-id-list', cacheKey, 86400);
 
       return UserMapper.mapperRoleToUser(user);
