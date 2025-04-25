@@ -8,7 +8,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 // import helmet from 'helmet';
-import compression from 'compression';
+// import compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,7 +18,7 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
 
   // Habilitar compresión
-  app.use(compression());
+  // app.use(compression());
 
   // Configuración correcta de CORS
   app.enableCors();
