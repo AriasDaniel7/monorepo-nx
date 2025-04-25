@@ -73,7 +73,7 @@ import { CacheManagerModule } from './cache-manager/cache-manager.module';
                   ),
                 ).toString(),
                 rejectUnauthorized: true,
-                checkServerIdentity: () => undefined, //TODO: Quitar en producción - solo es para evitar que se indentifique como localhost
+                //checkServerIdentity: () => undefined, //TODO: Quitar en producción - solo es para evitar que se indentifique como localhost
               }
             : false;
 
