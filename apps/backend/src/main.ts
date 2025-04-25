@@ -26,10 +26,19 @@ async function bootstrap() {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+          scriptSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            "'unsafe-eval'",
+            'https://static.cloudflareinsights.com',
+          ],
           styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
           imgSrc: ["'self'", 'data:', 'https:'],
-          connectSrc: ["'self'", 'https://danielarias.site'],
+          connectSrc: [
+            "'self'",
+            'https://danielarias.site/*',
+            'https://*.cloudflareinsights.com',
+          ],
           fontSrc: ["'self'", 'https:'],
           objectSrc: ["'none'"],
           mediaSrc: ["'self'"],
@@ -37,6 +46,7 @@ async function bootstrap() {
         },
       },
       crossOriginResourcePolicy: { policy: 'cross-origin' },
+      crossOriginEmbedderPolicy: false,
     }),
   );
 
