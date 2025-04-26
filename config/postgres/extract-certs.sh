@@ -6,9 +6,15 @@ mkdir -p ./certs
 echo "Extrayendo certificados SSL de PostgreSQL..."
 
 # Extraer certificados del contenedor
-docker cp postgresql:/opt/bitnami/postgresql/certs/ca.crt ./certs/
-docker cp postgresql:/opt/bitnami/postgresql/certs/client.crt ./certs/
-docker cp postgresql:/opt/bitnami/postgresql/certs/client.key ./certs/
+sudo docker cp postgresql:/opt/bitnami/postgresql/certs/ca.crt ./certs/
+sudo docker cp postgresql:/opt/bitnami/postgresql/certs/client.crt ./certs/
+sudo docker cp postgresql:/opt/bitnami/postgresql/certs/client.key ./certs/
+
+sudo chown -R $USER:$USER ./certs
+# Cambiar permisos de los certificados
+sudo chmod 600 ./certs/client.key
+sudo chmod 644 ./certs/client.crt
+sudo chmod 644 ./certs/ca.crt
 
 # Verificar que los archivos se hayan extraído correctamente
 if [ -f ./certs/client.key ]; then
